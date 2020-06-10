@@ -10,7 +10,7 @@ cd() {
 }
 
 cp() {
-  /bin/cp $@
+  /bin/cp $@ || { return 1; }
 
   local destination=$(get_last_dirname_from_array $@)
   local oldFilenames=()
@@ -21,7 +21,7 @@ cp() {
     for arg in $@
     do
       oldFilenames+=$(basename $arg 2> /dev/null)
-      [[ $(realpath "$arg") == $(realpath $destination) ]] && continue
+      [[ $(realpath "$arg" 2> /dev/null) == $(realpath $destination) ]] && continue
       oldFilesDirnames+=$(dirname $arg 2> /dev/null)
     done
 
