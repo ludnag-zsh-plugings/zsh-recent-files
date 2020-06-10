@@ -1,5 +1,5 @@
 # TODO there is some bug with underscores?
-export RECENTS_DATA="$HOME/.local/share/recents/"
+export RECENTS_DATA="$HOME/.local/share/zsh/zsh_recent_files/"
 
 recentFiles="${RECENTS_DATA}recent-files.txt"
 recentDirs="${RECENTS_DATA}recent-dirs.txt" # Wrote these lines last time
@@ -14,7 +14,7 @@ addToRecents() {
   [[ ! -f $recentFiles ]] && touch $recentFiles
   [[ ! -f $recentDirs ]] && touch $recentDirs
 
-  for arg in $*;
+  for arg in $@;
   do
     fullPathName=$(realpath $arg)
     [[ -f $fullPathName ]] && echo $fullPathName >> $recentFiles && echo $(realpath $(dirname $arg)) >> $recentDirs && let foundFiles++ foundDirs++
