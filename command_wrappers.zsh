@@ -10,33 +10,41 @@ cd() {
 }
 
 cp() {
-  #! /bin/cp $* && return
-  /bin/cp $*
+  /bin/cp $@
 
-  local destination=${@:~0}
-  #echo destination:$destination
+  local destination=$(get_last_dirname_from_array $@)
+  local oldFilenames=()
+  local oldFilesDirnames=()
 
-  if [[ -f $destination ]];
+  if [[ -d $destination ]];
   then
-    #echo "\$destination is a file"
-    addToRecents $1 $destination
-  else;
-    local oldFilenames=()
-    for arg in $*
+    for arg in $@
     do
-      #echo arg: $arg
-      oldFilenames+=$(basename $arg &> /dev/null)
+      oldFilenames+=$(basename $arg 2> /dev/null)
+      [[ $(realpath "$arg") == $(realpath $destination) ]] && continue
+      oldFilesDirnames+=$(dirname $arg 2> /dev/null)
     done
 
     local newFilenames=()
 
-    for oldFilename in $oldFilenames
+    for filename in $oldFilenames
     do
-      #echo before: $oldFilename
-      newFilenames+="$destination/$oldFilename"
-      #echo after: ${newFilenames:~0} 
+      newFilenames+="$destination/$filename"
     done
-    addToRecents $oldFilenames $newFilenames
+
+    addToRecents $oldFilenames $newFilenames $oldFilesDirnames $destination
   fi
 
+}
+
+get_last_dirname_from_array() {
+  last_dirname="";
+  for arg in $@;
+  do
+    if [ -d $arg ]; then
+      last_dirname=$arg
+    fi
+  done
+
+  echo $last_dirname
 }
