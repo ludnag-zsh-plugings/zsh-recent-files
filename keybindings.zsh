@@ -34,7 +34,7 @@ fi
 zle -N zsh_recents_list_recent_dirs_insert
 bindkey '^d' zsh_recents_list_recent_dirs_insert
 
-zsh_recents_h_list_recent_files_insert() {
+zsh_recents_list_recent_files_insert() {
 local selected
 setopt SH_WORD_SPLIT
 
