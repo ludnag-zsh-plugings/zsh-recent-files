@@ -1,12 +1,14 @@
+source $ZSH_RECENTS/util_functions.zsh
 
 # Wrapper to integrate "recents.zsh"
 # TODO add the folder we are currently in, to the recents list before the one 
 # we are cd'ing into
 cd() {
+  builtin cd $@ || { return 1; }
+
   addToRecents $(pwd)
   [ -z $1 ] && addToRecents $HOME
-  addToRecents $*
-  builtin cd $*
+  addToRecents $@
 }
 
 cp() {
@@ -34,17 +36,44 @@ cp() {
 
     addToRecents $oldFilenames $newFilenames $oldFilesDirnames $destination
   fi
-
 }
 
-get_last_dirname_from_array() {
-  last_dirname="";
+# Wrapper for zsh module "recent files and dirs"
+mv() {
+  /bin/mv $@
+
+  # TODO Make this if statement shorter/merge with rest of function
+  if [ $# -eq 2 ]; then
+    if [ -d $(realpath $2) ]; then
+      /bin/mv $@ && [[ $? -eq 1 ]] && exit;
+      local filename=$(basename $1)
+      local oldDirname=$(dirname $1)
+      local filenameWithDirName="$2/$filename"
+      addToRecents $oldDirname $filenameWithDirName
+    else;
+      /bin/mv $@
+      local oldDirname=$(dirname $1)
+      addToRecents $oldDirname $*[1]
+    fi
+    return 0
+  fi
+
+  oldFilesDirs=()
+
   for arg in $@;
   do
-    if [ -d $arg ]; then
-      last_dirname=$arg
-    fi
+    [[ -f $arg ]] && oldFilesDirs+=$(dirname $arg)
   done
 
-  echo $last_dirname
+  newFiles=()
+  destinationDir=${@:~0}
+
+  for arg in $@;
+  do
+    potentialNewFilename="$destinationDir/$arg"
+    [[ -f "$potentialNewFilename" ]] && newFiles+=$potentialNewFilename
+  done
+
+  addToRecents $oldFilesDirs $newFiles
 }
+
