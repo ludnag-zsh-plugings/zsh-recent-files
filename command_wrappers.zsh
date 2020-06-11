@@ -5,7 +5,8 @@ source $ZSH_RECENTS/util_functions.zsh
 # we are cd'ing into
 cd() {
   local orig_dir=$(pwd)
-  local dest=$(realpath $@)
+  local dest=""
+  [[ ! -z $@ ]] && local dest=$(realpath $@)
   builtin cd $@ || { return 1; }
 
   ( addToRecents $(pwd)
