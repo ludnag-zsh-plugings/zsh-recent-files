@@ -15,43 +15,40 @@ cp() {
   /bin/cp $@ || { return 1; }
 
   local destination=$(get_last_dirname_from_array $@)
-  local oldFilenames=()
-  local oldFilesDirnames=()
+  local oldBasenames=()
+  local newFilepaths=()
 
   if [[ -d $destination ]];
   then
     for arg in $@
     do
-      oldFilenames+=$(basename $arg 2> /dev/null)
       [[ $(realpath "$arg" 2> /dev/null) == $(realpath $destination) ]] && continue
-      oldFilesDirnames+=$(dirname $arg 2> /dev/null)
+      oldBasenames+=$(basename $arg 2> /dev/null)
     done
 
-    local newFilenames=()
 
-    for filename in $oldFilenames
+    for filename in $oldBasenames
     do
-      newFilenames+="$destination/$filename"
+      newFilepaths+="$destination/$filename"
     done
-
-    addToRecents $oldFilenames $newFilenames $oldFilesDirnames $destination
   fi
+
+    #addToRecents $oldBasenames $newFilepaths $oldFilesDirnames $destination
+    addToRecents $newFilepaths $@
 }
 
 # Wrapper for zsh module "recent files and dirs"
 mv() {
-  /bin/mv $@
+  /bin/mv $@ || { return 1; }
 
   # TODO Make this if statement shorter/merge with rest of function
   if [ $# -eq 2 ]; then
     if [ -d $(realpath $2) ]; then
-      /bin/mv $@ && [[ $? -eq 1 ]] && exit;
       local filename=$(basename $1)
       local oldDirname=$(dirname $1)
       local filenameWithDirName="$2/$filename"
       addToRecents $oldDirname $filenameWithDirName
     else;
-      /bin/mv $@
       local oldDirname=$(dirname $1)
       addToRecents $oldDirname $*[1]
     fi
