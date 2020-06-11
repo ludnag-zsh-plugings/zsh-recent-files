@@ -4,17 +4,19 @@ source $ZSH_RECENTS/util_functions.zsh
 # TODO add the folder we are currently in, to the recents list before the one 
 # we are cd'ing into
 cd() {
+  local orig_dir=$(pwd)
+  local dest=$(realpath $@)
   builtin cd $@ || { return 1; }
 
-  addToRecents $(pwd)
+  ( addToRecents $(pwd)
   [ -z $1 ] && addToRecents $HOME
-  addToRecents $@
+  addToRecents $orig_dir $dest &) > /dev/null
 }
 
 cp() {
   /bin/cp $@ || { return 1; }
 
-  local destination=$(get_last_dirname_from_array $@)
+  ( local destination=$(get_last_dirname_from_array $@)
   local oldBasenames=()
   local newFilepaths=()
 
@@ -26,7 +28,6 @@ cp() {
       oldBasenames+=$(basename $arg 2> /dev/null)
     done
 
-
     for filename in $oldBasenames
     do
       newFilepaths+="$destination/$filename"
@@ -34,7 +35,7 @@ cp() {
   fi
 
     #addToRecents $oldBasenames $newFilepaths $oldFilesDirnames $destination
-    addToRecents $newFilepaths $@
+    addToRecents $newFilepaths $@ &) > /dev/null
 }
 
 # Wrapper for zsh module "recent files and dirs"
