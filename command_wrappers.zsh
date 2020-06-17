@@ -29,9 +29,9 @@ cp() {
       oldBasenames+=$(basename $arg 2> /dev/null)
     done
 
-    for filename in $oldBasenames
+    for oldBasename in $oldBasenames
     do
-      newFilepaths+="$destination/$filename"
+      newFilepaths+="$destination/$oldBasename"
     done
   fi
 
@@ -41,18 +41,18 @@ cp() {
 
 # Wrapper for zsh module "recent files and dirs"
 mv() {
-  /bin/mv $@ || { return 1; }
+  /bin/mv "$@" || { return 1; }
 
   # TODO Make this if statement shorter/merge with rest of function
   if [ $# -eq 2 ]; then
     if [ -d $(realpath $2) ]; then
-      local filename=$(basename $1)
-      local oldDirname=$(dirname $1)
-      local filenameWithDirName="$2/$filename"
-      addToRecents $oldDirname $filenameWithDirName
+      local oldBasename=$(basename "$1")
+      local oldDirname=$(dirname "$1")
+      local filenameWithDirName="$2/$oldBasename"
+      addToRecents "$oldDirname" "$filenameWithDirName"
     else;
       local oldDirname=$(dirname $1)
-      addToRecents $oldDirname $*[1]
+      addToRecents $oldDirname $@[1]
     fi
     return 0
   fi
@@ -73,6 +73,6 @@ mv() {
     [[ -f "$potentialNewFilename" ]] && newFiles+=$potentialNewFilename
   done
 
-  addToRecents $oldFilesDirs $newFiles
+  addToRecents $oldFilesDirs $newFiles "$@"
 }
 
