@@ -4,13 +4,13 @@ source $ZSH_RECENTS/util_functions.zsh
 # TODO add the folder we are currently in, to the recents list before the one 
 # we are cd'ing into
 cd() {
-  local orig_dir=$(pwd)
+  local orig_dir="$(pwd)"
   local dest=""
   [[ ! -z $@ ]] && local dest=$(realpath $@)
-  builtin cd $@ || { return 1; }
+  builtin cd "$@" || { return 1; }
 
   ( addToRecents $(pwd)
-  [ -z $1 ] && addToRecents $HOME
+  [[ -z $1 ]] && addToRecents $HOME
   addToRecents $orig_dir $dest &) > /dev/null
 }
 
