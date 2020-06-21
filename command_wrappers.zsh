@@ -9,8 +9,7 @@ cd() {
   [[ ! -z $@ ]] && local dest=$(realpath $@)
   builtin cd "$@" || { return 1; }
 
-  ( add_to_recents $(pwd)
-  [[ -z $1 ]] && add_to_recents $HOME
+  ( [[ -z $1 ]] && add_to_recents $HOME && return 0;
   add_to_recents $orig_dir $dest &) > /dev/null
 }
 
