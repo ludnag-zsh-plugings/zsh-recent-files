@@ -25,7 +25,7 @@ cp() {
   then
     for arg in $@
     do
-      [[ $(realpath "$arg" 2> /dev/null) == $(realpath $destination) ]] && continue
+      [[ $(realpath $arg 2> /dev/null) == $(realpath $destination) ]] && continue
       old_basenames+=$(basename $arg 2> /dev/null)
     done
 
@@ -35,8 +35,7 @@ cp() {
     done
   fi
 
-    #add_to_recents $old_basenames $new_filepaths $oldFilesDirnames $destination
-    add_to_recents $new_filepaths $@ &) > /dev/null
+  add_to_recents $new_filepaths $@ &) > /dev/null
 }
 
 # Wrapper for zsh module "recent files and dirs"
