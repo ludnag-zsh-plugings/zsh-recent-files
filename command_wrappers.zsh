@@ -9,7 +9,7 @@ cd() {
   [[ ! -z $@ ]] && local dest=$(realpath $@)
   builtin cd "$@" || { return 1; }
 
-  ( [[ -z $1 ]] && add_to_recents $HOME && return 0;
+  ( [[ -z $1 ]] && add_to_recents $HOME && echo "wtf" >> $HOME/zsh_recents_log
   add_to_recents $orig_dir $dest &) > /dev/null
 }
 
@@ -72,5 +72,11 @@ mv() {
   done
 
   add_to_recents $old_files_dirs $new_files "$@"
+}
+
+v() {
+  $EDITOR $@
+
+  (add_to_recents $@ &) > /dev/null
 }
 
