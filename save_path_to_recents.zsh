@@ -1,55 +1,55 @@
 # TODO there is some bug with underscores?
-export ZSH_RECENTS_DATA="$HOME/.local/share/zsh/zsh_recent_files/"
+export ZSH_RECENTS_DATA="$HOME/.local/share/zsh/zsh_recents/"
 
-recentFiles="${ZSH_RECENTS_DATA}recent-files.txt"
-recentDirs="${ZSH_RECENTS_DATA}recent-dirs.txt" # Wrote these lines last time
+recent_files="${ZSH_RECENTS_DATA}recent_files.txt"
+recent_dirs="${ZSH_RECENTS_DATA}recent_dirs.txt"
 
-maxRecentsEntries=250
+max_recents_entries=250
 
-addToRecents() {
-  local foundFiles=0
-  local foundDirs=0
+add_to_recents() {
+  local found_files=0
+  local found_dirs=0
 
   [[ ! -d $ZSH_RECENTS_DATA ]] && mkdir -p $ZSH_RECENTS_DATA
-  [[ ! -f $recentFiles ]] && touch $recentFiles
-  [[ ! -f $recentDirs ]] && touch $recentDirs
+  [[ ! -f $recent_files ]] && touch $recent_files
+  [[ ! -f $recent_dirs ]] && touch $recent_dirs
 
   for arg in $@;
   do
-    fullPathname=$(realpath $arg)
-    [[ -f $fullPathname ]] && echo $fullPathname >> $recentFiles && echo $(realpath $(dirname $arg)) >> $recentDirs && let foundFiles++ foundDirs++
-    [[ -d $fullPathname ]] && echo $fullPathname >> $recentDirs && let foundDirs++
+    full_pathname=$(realpath $arg)
+    [[ -f $full_pathname ]] && echo $full_pathname >> $recent_files && echo $(realpath $(dirname $arg)) >> $recent_dirs && let found_files++ found_dirs++
+    [[ -d $full_pathname ]] && echo $full_pathname >> $recent_dirs && let found_dirs++
   done
 
   # Remove duplicates
-  if [ $foundFiles -gt 0 ]; then
-    sed -i '/^$/d' $recentDirs
-    tempRecentFiles=$ZSH_RECENTS_DATA/tempRecentFiles
-    /bin/cp -f $recentFiles $tempRecentFiles
-    tac $tempRecentFiles | awk '!x[$0]++' | tac > $recentFiles
-    /bin/rm $tempRecentFiles
+  if [ $found_files -gt 0 ]; then
+    sed -i '/^$/d' $recent_dirs
+    temp_recent_files=$ZSH_RECENTS_DATA/temp_recent_files
+    /bin/cp -f $recent_files $temp_recent_files
+    tac $temp_recent_files | awk '!x[$0]++' | tac > $recent_files
+    /bin/rm $temp_recent_files
   fi
 
-  if [ $foundDirs -gt 0 ]; then
-    sed -i '/^$/d' $recentDirs
-    tempRecentDirs=$ZSH_RECENTS_DATA/tempRecentDirs
-    /bin/cp -f $recentDirs $tempRecentDirs
-    tac $tempRecentDirs | awk '!x[$0]++' | tac > $recentDirs
-    /bin/rm $tempRecentDirs
+  if [ $found_dirs -gt 0 ]; then
+    sed -i '/^$/d' $recent_dirs
+    temp_recent_dirs=$ZSH_RECENTS_DATA/temp_recent_dirs
+    /bin/cp -f $recent_dirs $temp_recent_dirs
+    tac $temp_recent_dirs | awk '!x[$0]++' | tac > $recent_dirs
+    /bin/rm $temp_recent_dirs
   fi
 
   # Remove invalid paths
-  for filename in $(cat $recentFiles);
+  for filename in $(cat $recent_files);
   do
-    [[ ! -f $filename ]] && sed -i "\,$filename,d" $recentFiles
+    [[ ! -f $filename ]] && sed -i "\,$filename,d" $recent_files
   done
 
-  for dirname in $(cat $recentDirs);
+  for dirname in $(cat $recent_dirs);
   do
-    [[ ! -d $dirname ]] && sed -i "\,$dirname,d" $recentDirs
+    [[ ! -d $dirname ]] && sed -i "\,$dirname,d" $recent_dirs
   done
 
   # Trim ZSH_RECENTS_DATA history if it gets too long
-  [[ $(wc -l $recentFiles | awk '{ print $1;}') -gt $maxRecentsEntries ]] && tac $recentFiles | head -$maxRecentsEntries | tac > $tempRecentFiles && /bin/mv $tempRecentFiles $recentFiles
-  [[ $(wc -l $recentDirs | awk '{ print $1;}') -gt $maxRecentsEntries ]] && echo "Too many entries!!" && tac $recentDirs | head -$maxRecentsEntries | tac > $tempRecentDirs && /bin/mv $tempRecentDirs $recentDirs
+  [[ $(wc -l $recent_files | awk '{ print $1;}') -gt $max_recents_entries ]] && tac $recent_files | head -$max_recents_entries | tac > $temp_recent_files && /bin/mv $temp_recent_files $recent_files
+  [[ $(wc -l $recent_dirs | awk '{ print $1;}') -gt $max_recents_entries ]] && echo "Too many entries!!" && tac $recent_dirs | head -$max_recents_entries | tac > $temp_recent_dirs && /bin/mv $temp_recent_dirs $recent_dirs
 }

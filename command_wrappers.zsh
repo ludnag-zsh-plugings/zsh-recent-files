@@ -9,34 +9,34 @@ cd() {
   [[ ! -z $@ ]] && local dest=$(realpath $@)
   builtin cd "$@" || { return 1; }
 
-  ( addToRecents $(pwd)
-  [[ -z $1 ]] && addToRecents $HOME
-  addToRecents $orig_dir $dest &) > /dev/null
+  ( add_to_recents $(pwd)
+  [[ -z $1 ]] && add_to_recents $HOME
+  add_to_recents $orig_dir $dest &) > /dev/null
 }
 
 cp() {
   /bin/cp $@ || { return 1; }
 
   ( local destination=$(get_last_dirname_from_array $@)
-  local oldBasenames=()
-  local newFilepaths=()
+  local old_basenames=()
+  local new_filepaths=()
 
   if [[ -d $destination ]];
   then
     for arg in $@
     do
       [[ $(realpath "$arg" 2> /dev/null) == $(realpath $destination) ]] && continue
-      oldBasenames+=$(basename $arg 2> /dev/null)
+      old_basenames+=$(basename $arg 2> /dev/null)
     done
 
-    for oldBasename in $oldBasenames
+    for old_basename in $old_basenames
     do
-      newFilepaths+="$destination/$oldBasename"
+      new_filepaths+="$destination/$old_basename"
     done
   fi
 
-    #addToRecents $oldBasenames $newFilepaths $oldFilesDirnames $destination
-    addToRecents $newFilepaths $@ &) > /dev/null
+    #add_to_recents $old_basenames $new_filepaths $oldFilesDirnames $destination
+    add_to_recents $new_filepaths $@ &) > /dev/null
 }
 
 # Wrapper for zsh module "recent files and dirs"
@@ -46,33 +46,33 @@ mv() {
   # TODO Make this if statement shorter/merge with rest of function
   if [ $# -eq 2 ]; then
     if [ -d $(realpath $2) ]; then
-      local oldBasename=$(basename "$1")
-      local oldDirname=$(dirname "$1")
-      local filenameWithDirName="$2/$oldBasename"
-      addToRecents "$oldDirname" "$filenameWithDirName"
+      local old_basename=$(basename "$1")
+      local old_dirname=$(dirname "$1")
+      local filename_withdir_name="$2/$old_basename"
+      add_to_recents "$old_dirname" "$filename_withdir_name"
     else;
-      local oldDirname=$(dirname $1)
-      addToRecents $oldDirname $@[1]
+      local old_dirname=$(dirname $1)
+      add_to_recents $old_dirname $@[1]
     fi
     return 0
   fi
 
-  oldFilesDirs=()
+  old_files_dirs=()
 
   for arg in $@;
   do
-    [[ -f $arg ]] && oldFilesDirs+=$(dirname $arg)
+    [[ -f $arg ]] && old_files_dirs+=$(dirname $arg)
   done
 
-  newFiles=()
-  destinationDir=${@:~0}
+  new_files=()
+  destination_dir=${@:~0}
 
   for arg in $@;
   do
-    potentialNewFilename="$destinationDir/$arg"
-    [[ -f "$potentialNewFilename" ]] && newFiles+=$potentialNewFilename
+    potential_new_filename="$destination_dir/$arg"
+    [[ -f "$potential_new_filename" ]] && new_files+=$potential_new_filename
   done
 
-  addToRecents $oldFilesDirs $newFiles "$@"
+  add_to_recents $old_files_dirs $new_files "$@"
 }
 

@@ -3,14 +3,14 @@ setopt SH_WORD_SPLIT # ??
 local selected
 
   # Stop if there are no recent entries
-  [[ $(wc -l $recentDirs | awk '{ print $1;}') -eq 0 ]] && echo "\nNo recent dirs.\n\n" && zle fzf-redraw-prompt && return 1;
+  [[ $(wc -l $recent_dirs | awk '{ print $1;}') -eq 0 ]] && echo "\nNo recent dirs.\n\n" && zle fzf-redraw-prompt && return 1;
 
-  if selected=$(tac $recentDirs | sed "s,$HOME,~,; s,$,/,; s,//,/," | fzf --header "CD to recently used dir" --no-sort); then
+  if selected=$(tac $recent_dirs | sed "s,$HOME,~,; s,$,/,; s,//,/," | fzf --header "CD to recently used dir" --no-sort); then
     selected=$(tr '\n' ' ' <<< ${selected}) # replace newlines with spaces
     selected=$(sed "s,~,$HOME," <<< ${selected})
     selected=$(echo $selected | rev | cut -c1- | rev )
     cd "${selected}"
-    addToRecents $selected
+    add_to_recents $selected
 
   fi
   zle reset-prompt # re-renders the prompt
@@ -22,9 +22,9 @@ zsh_recents_list_recent_dirs_insert() {
 setopt SH_WORD_SPLIT
 local selected
 
-[[ $(wc -l $recentDirs | awk '{ print $1;}') -eq 0 ]] && echo "\nNo recent dirs.\n\n" && zle fzf-redraw-prompt && return 1;
+[[ $(wc -l $recent_dirs | awk '{ print $1;}') -eq 0 ]] && echo "\nNo recent dirs.\n\n" && zle fzf-redraw-prompt && return 1;
 
-if selected=$(tac $recentDirs | sed "s,$HOME,~,; s,$,/,; s,//,/," | fzf --header "Add recently used DIRNAMES to prompt" --no-sort); then
+if selected=$(tac $recent_dirs | sed "s,$HOME,~,; s,$,/,; s,//,/," | fzf --header "Add recently used DIRNAMES to prompt" --no-sort); then
   selected=$(tr '\n' ' ' <<< ${selected}) # replace newlines with spaces
   LBUFFER="$LBUFFER$selected"
   zle reset-prompt
@@ -38,9 +38,9 @@ zsh_recents_list_recent_files_insert() {
 local selected
 setopt SH_WORD_SPLIT
 
-[[ $(wc -l $recentFiles | awk '{ print $1;}') -eq 0 ]] && echo "\nNo recent files.\n\n" && zle fzf-redraw-prompt && return 1;
+[[ $(wc -l $recent_files | awk '{ print $1;}') -eq 0 ]] && echo "\nNo recent files.\n\n" && zle fzf-redraw-prompt && return 1;
 
-if selected=$(tac $recentFiles | sed "s,$HOME,~,; s,//,/," | fzf --header "Add recently used FILENAMES to prompt" --no-sort); then
+if selected=$(tac $recent_files | sed "s,$HOME,~,; s,//,/," | fzf --header "Add recently used FILENAMES to prompt" --no-sort); then
   selected=$(tr '\n' ' ' <<< ${selected}) # replace newlines with spaces
   LBUFFER="$LBUFFER$selected"
   zle reset-prompt
