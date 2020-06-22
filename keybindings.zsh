@@ -1,4 +1,4 @@
-zsh_recents_list_recent_dirs_cd() {
+zsh_recents_cd_recent_dir() {
 setopt SH_WORD_SPLIT # ??
 local selected
 
@@ -19,17 +19,17 @@ local selected
   first_char_selected=$(echo $selected | cut -c 1)
   if [ $first_char_selected = "~" ];
   then
-    rp_selected="$(echo ${HOME}$(echo ${selected} | cut -c 2-))"
+    realpath_selected="$(echo ${HOME}$(echo ${selected} | cut -c 2-))"
   else
-    rp_selected=$selected
+    realpath_selected=$selected
   fi
 
-  (add_to_recents $rp_selected &) > /dev/null
+  (add_to_recents $realpath_selected &) > /dev/null
 }
-zle -N zsh_recents_list_recent_dirs_cd
-#bindkey '^d' fzf-list-recent-dirs-cd
+zle -N zsh_recents_cd_recent_dir
+#bindkey '^d' fzf_recents_cd_dir
 
-zsh_recents_list_recent_dirs_insert() {
+zsh_recents_insert_recent_dirs() {
   setopt SH_WORD_SPLIT
   local selected
 
@@ -48,17 +48,17 @@ zsh_recents_list_recent_dirs_insert() {
   first_char_selected=$(echo $selected | cut -c 1)
   if [ $first_char_selected = "~" ];
   then
-    rp_selected="$(echo ${HOME}$(echo ${selected} | cut -c 2-))"
+    realpath_selected="$(echo ${HOME}$(echo ${selected} | cut -c 2-))"
   else
-    rp_selected=$selected
+    realpath_selected=$selected
   fi
 
-  (add_to_recents $rp_selected &) > /dev/null
+  (add_to_recents $realpath_selected &) > /dev/null
 }
-zle -N zsh_recents_list_recent_dirs_insert
-bindkey '^d' zsh_recents_list_recent_dirs_insert
+zle -N zsh_recents_insert_recent_dirs
+bindkey '^d' zsh_recents_insert_recent_dirs
 
-zsh_recents_list_recent_files_insert() {
+zsh_recents_insert_recent_files() {
   local selected
   setopt SH_WORD_SPLIT
 
@@ -70,19 +70,19 @@ zsh_recents_list_recent_files_insert() {
     zle reset-prompt
     zle fzf-redraw-prompt #clear the prompt of any potential error messages
   else
-
+    zle fzf-redraw-prompt #clear the prompt of any potential error messages
     return 1;
   fi
 
   first_char_selected=$(echo $selected | cut -c 1)
   if [ $first_char_selected = "~" ];
   then
-    rp_selected="$(echo ${HOME}$(echo ${selected} | cut -c 2-))"
+    realpath_selected="$(echo ${HOME}$(echo ${selected} | cut -c 2-))"
   else
-    rp_selected=$selected
+    realpath_selected=$selected
   fi
 
-  (add_to_recents $rp_selected &) > /dev/null
+  (add_to_recents $realpath_selected &) > /dev/null
 }
-zle -N zsh_recents_list_recent_files_insert
-bindkey '^f' zsh_recents_list_recent_files_insert
+zle -N zsh_recents_insert_recent_files
+bindkey '^f' zsh_recents_insert_recent_files
