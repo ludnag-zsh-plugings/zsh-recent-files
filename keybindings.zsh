@@ -1,33 +1,34 @@
-zsh_recents_cd_recent_dir() {
+zsh_recents_cd() {
 setopt SH_WORD_SPLIT # ??
 local selected
 
   # Stop if there are no recent entries
   [[ $(wc -l $recent_dirs | awk '{ print $1;}') -eq 0 ]] && echo "\nNo recent dirs.\n\n" && zle fzf-redraw-prompt && return 1;
 
-  if selected=$(tac $recent_dirs | sed "s,$HOME,~,; s,$,/,; s,//,/," | fzf --header "CD to recently used dir" --no-sort); then
+  if selected=$(tac $recent_dirs | sed "s,$HOME,~,; s,$,/,; s,//,/," | fzf --header "CD to recently used dir" --height=40% --no-sort); then
+
     selected=$(tr '\n' ' ' <<< ${selected}) # replace newlines with spaces
     selected=$(sed "s,~,$HOME," <<< ${selected})
     selected=$(echo $selected | rev | cut -c1- | rev )
     cd "${selected}"
-    add_to_recents $selected
   else
     return 1;
   fi
-  zle reset-prompt # re-renders the prompt
 
-  first_char_selected=$(echo $selected | cut -c 1)
-  if [ $first_char_selected = "~" ];
-  then
-    realpath_selected="$(echo ${HOME}$(echo ${selected} | cut -c 2-))"
-  else
-    realpath_selected=$selected
-  fi
+  zle reset-prompt # re-renders the prompt after noninteractive cd
 
-  (add_to_recents $realpath_selected &) > /dev/null
+  #first_char_selected=$(echo $selected | cut -c 1)
+  #if [ $first_char_selected = "~" ];
+  #then
+    #realpath_selected="$(echo ${HOME}$(echo ${selected} | cut -c 2-))"
+  #else
+    #realpath_selected=$selected
+  #fi
+
+  #(add_to_recents $realpath_selected &) > /dev/null
 }
-zle -N zsh_recents_cd_recent_dir
-#bindkey '^d' fzf_recents_cd_dir
+zle -N zsh_recents_cd
+bindkey '^t' zsh_recents_cd
 
 zsh_recents_insert_recent_dirs() {
   setopt SH_WORD_SPLIT
@@ -53,6 +54,9 @@ zsh_recents_insert_recent_dirs() {
     realpath_selected=$selected
   fi
 
+  echo "" # prevent deleting previous line in prompt
+  echo "" # prevent deleting previous line in prompt
+
   (add_to_recents $realpath_selected &) > /dev/null
 }
 zle -N zsh_recents_insert_recent_dirs
@@ -73,6 +77,9 @@ zsh_recents_insert_recent_files() {
     zle fzf-redraw-prompt #clear the prompt of any potential error messages
     return 1;
   fi
+
+  echo "" # prevent deleting previous line in prompt
+  echo "" # prevent deleting previous line in prompt
 
   first_char_selected=$(echo $selected | cut -c 1)
   if [ $first_char_selected = "~" ];
