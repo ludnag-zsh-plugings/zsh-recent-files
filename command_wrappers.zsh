@@ -1,8 +1,9 @@
 source $ZSH_RECENTS/util_functions.zsh
 
-# Wrapper to integrate "recents.zsh"
-# TODO add the folder we are currently in, to the recents list before the one 
-# we are cd'ing into
+# TODO For all wrappers: add paths to be added to recents to an array 
+# throughout the functions. Then, at the end, add all the entries in the array 
+# to recents. Should be more readable
+
 cd() {
   local orig_dir="$(pwd)"
   local dest=""
