@@ -10,7 +10,7 @@ cd() {
   [[ ! -z $@ ]] && local dest=$(realpath $@)
   builtin cd "$@" || { return 1; }
 
-  ( [[ -z $1 ]] && dest="$HOME" && echo "wtf" >> $HOME/zsh_recents_log
+  ( [[ -z $1 ]] && dest="$HOME"
   add_to_recents $orig_dir $dest &) > /dev/null
 }
 
