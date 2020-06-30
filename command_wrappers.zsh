@@ -40,7 +40,7 @@ cp() {
 
 # Wrapper for zsh module "recent files and dirs"
 mv() {
-  /bin/mv "$@" || { return 1; }
+  /bin/mv -i "$@" || { return 1; }
 
   # TODO Make this if statement shorter/merge with rest of function
   if [ $# -eq 2 ]; then
