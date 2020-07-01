@@ -40,30 +40,17 @@ cp() {
 
 # Wrapper for zsh module "recent files and dirs"
 mv() {
-  /bin/mv -i "$@" || { return 1; }
-
-  # TODO Make this if statement shorter/merge with rest of function
-  if [ $# -eq 2 ]; then
-    if [ -d $(realpath $2) ]; then
-      local old_basename=$(basename "$1")
-      local old_dirname=$(dirname "$1")
-      local filename_withdir_name="$2/$old_basename"
-      add_to_recents "$old_dirname" "$filename_withdir_name"
-    else;
-      local old_dirname=$(dirname $1)
-      add_to_recents $old_dirname $@[1]
-    fi
-    return 0
-  fi
-
-  old_files_dirs=()
+  old_files_dirnames=()
 
   for arg in $@;
   do
-    [[ -f $arg ]] && old_files_dirs+=$(dirname $arg)
+    [[ -f $arg ]] && old_files_dirnames+=$(dirname $arg)
   done
 
-  new_files=()
+  /bin/mv -i "$@" || { return 1; }
+
+
+  (new_files=()
   destination_dir=${@:~0}
 
   for arg in $@;
@@ -72,7 +59,7 @@ mv() {
     [[ -f "$potential_new_filename" ]] && new_files+=$potential_new_filename
   done
 
-  add_to_recents $old_files_dirs $new_files "$@"
+  add_to_recents $old_files_dirnames $new_files "$@") > /dev/null
 }
 
 v() {
