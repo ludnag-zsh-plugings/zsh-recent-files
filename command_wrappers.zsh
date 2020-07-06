@@ -1,5 +1,3 @@
-source $ZSH_RECENTS/util_functions.zsh
-
 # TODO For all wrappers: add paths to be added to recents to an array 
 # throughout the functions. Then, at the end, add all the entries in the array 
 # to recents. Should be more readable
