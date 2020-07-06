@@ -5,6 +5,8 @@ source $ZSH_RECENTS/util_functions.zsh
 # to recents. Should be more readable
 
 cd() {
+  if [[ $- != *i* ]] && cd $@ && return $?;
+
   local orig_dir="$(pwd)"
   local dest=""
   [[ ! -z $@ ]] && local dest=$(realpath $@)
