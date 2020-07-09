@@ -1,3 +1,6 @@
+# Demo
+![](./docs/gif_demos/demo_1.gif)
+
 # Installation
 
 1. Clone the repo:

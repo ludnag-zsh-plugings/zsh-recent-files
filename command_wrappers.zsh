@@ -2,6 +2,9 @@
 # throughout the functions. Then, at the end, add all the entries in the array 
 # to recents. Should be more readable
 
+# TODO: For all wrappers: check if the command is running in an interactive 
+# shell
+
 cd() {
   if [[ $- != *i* ]] && cd $@ && return $?;
 
@@ -62,8 +65,14 @@ mv() {
   add_to_recents $old_files_dirnames $new_files "$@") > /dev/null
 }
 
+trash() {
+  /bin/trash $@ || return $?;
+
+  (add_to_recents $@) > /dev/null
+}
+
 v() {
-  $EDITOR $@
+  $EDITOR $@ || return $?;
 
   (add_to_recents $@ &) > /dev/null
 }
