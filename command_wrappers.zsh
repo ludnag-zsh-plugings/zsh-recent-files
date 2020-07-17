@@ -66,7 +66,7 @@ mv() {
 }
 
 trash() {
-  /bin/trash $@ || return $?;
+  /bin/trash "$@" || return $?;
 
   (add_to_recents $@) > /dev/null
 }
