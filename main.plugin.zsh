@@ -1,5 +1,5 @@
 # Set ZSH_RECENTS to the path of your "zsh_recents" installation
-export ZSH_RECENTS=$ZSH_HOME/plugins/my_plugins/zsh_recents
+export ZSH_RECENTS=$ZSH_HOME/plugins/zsh-recent-files
 
 source $ZSH_RECENTS/util_functions.zsh
 
